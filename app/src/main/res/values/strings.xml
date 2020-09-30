@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">basic-steps-android</string>
+    <string name="result_label">Result:</string>
+    <string name="open_2_activity_button">open 2 activity</string>
+    <string name="numbers_title">Numbers:</string>
+    <string name="add_number_and_go_back">Add Number and go back</string>
+</resources>
