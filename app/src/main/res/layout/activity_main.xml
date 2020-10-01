@@ -9,32 +9,19 @@
     android:gravity="center"
     android:padding="16dp">
 
-    <EditText
-        android:id="@+id/number_1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Number 1"
-        android:inputType="number"/>
-
-
-    <EditText
-        android:id="@+id/number_2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Number 2"
-        android:inputType="number"/>
-
-    <TextView
-        android:id="@+id/label_result"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/result_label"
-        android:textSize="30sp"/>
-
     <Button
         android:id="@+id/button_open"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/open_2_activity_button"/>
+        android:text="@string/open_2_activity_button"
+        android:backgroundTint="@color/colorAccent"/>
+
+    <Button
+        android:id="@+id/button_add_event"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_event_to_my_calendar"
+        android:backgroundTint="@color/colorAccent"
+        android:layout_marginTop="15dp"/>
 
 </LinearLayout>

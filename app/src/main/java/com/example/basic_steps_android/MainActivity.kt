@@ -1,39 +1,63 @@
 package com.example.basic_steps_android
 
-import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
+import android.provider.CalendarContract
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val REQUEST_CODE_SECOND_ACTIVITY = 1
+        const val SECOND_ACTIVITY = "android.intent.action.SECOND_ACTIVITY"
+        const val TEXT_COMMONS = "android.intent.category.TEXT_COMMONS"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onStart() {
+        super.onStart()
 
         button_open.setOnClickListener {
-            val intent = Intent(this,Activity2::class.java)
-            intent.putExtra("number_1", if(isValidString(number_1.text.toString())) number_1.text.toString().toInt() else 0 )
-            intent.putExtra("number_2", if(isValidString(number_2.text.toString())) number_2.text.toString().toInt() else 0 )
-            startActivityForResult(intent, REQUEST_CODE_SECOND_ACTIVITY)
+
+            //chamar explicita passando a classe
+            /*val intent = Intent(this, Activity2::class.java)
+            startActivity(intent)*/
+
+            //chamar com intent implicita
+            val secAtivityIntent = Intent()
+            secAtivityIntent.action = SECOND_ACTIVITY
+            secAtivityIntent.addCategory(TEXT_COMMONS)
+            if(secAtivityIntent.resolveActivity(packageManager) != null) startActivity(secAtivityIntent)
+
+        }
+
+        button_add_event.setOnClickListener {
+            val cal: Calendar = Calendar.Builder().setCalendarType("iso8601")
+                .setDate(2020,9,7).build()
+            addEvent("Aniversario da Bia", "fique aí na sua casa mesmo", cal.timeInMillis , cal.timeInMillis)
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_CODE_SECOND_ACTIVITY && resultCode == Activity.RESULT_OK){
-            if(data != null){
-                label_result.text = getString(R.string.result_label) + "  " +  data.getIntExtra("result",0)
-            }
+
+    private fun addEvent(title: String, location: String, begin: Long, end: Long) {
+        val intent = Intent(Intent.ACTION_INSERT).apply {
+            data = CalendarContract.Events.CONTENT_URI
+            putExtra(CalendarContract.Events.TITLE, title)
+            putExtra(CalendarContract.Events.EVENT_LOCATION, location)
+            putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, begin)
+            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, end)
+        }
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
         }
     }
-
-    private fun isValidString(value: String): Boolean = !value.isNullOrEmpty()
 
 }
