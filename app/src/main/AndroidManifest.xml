@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity2">
+        <activity android:name=".FoodItemActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SECOND_ACTIVITY"/>
                 <category android:name="android.intent.category.TEXT_COMMONS"/>

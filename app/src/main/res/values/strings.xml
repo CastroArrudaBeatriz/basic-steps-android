@@ -1,8 +1,11 @@
 <resources>
-    <string name="app_name">basic-steps-android</string>
+    <string name="app_name">Listview Food</string>
     <string name="result_label">Result:</string>
     <string name="open_2_activity_button">open second activity with filter</string>
     <string name="numbers_title">Hi i\'m your second activity</string>
     <string name="add_number_and_go_back">Add Number and go back</string>
     <string name="add_event_to_my_calendar">add event to my calendar</string>
+    <string name="add_food">Add Food</string>
+    <string name="name_to_food">Name to food</string>
+    <string name="price">Price</string>
 </resources>

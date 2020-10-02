@@ -1,63 +1,84 @@
 package com.example.basic_steps_android
 
+import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.provider.CalendarContract
-import androidx.annotation.RequiresApi
+import android.os.PersistableBundle
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.basic_steps_android.adapter.FoodAdapter
+import com.example.basic_steps_android.model.Food
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val SECOND_ACTIVITY = "android.intent.action.SECOND_ACTIVITY"
-        const val TEXT_COMMONS = "android.intent.category.TEXT_COMMONS"
+        const val INTENT_FOOD_ID = 1
+        const val SAVED_FOOD_LIST = "saved_food_list"
     }
+
+    private val foodList = arrayListOf<Food>(
+        Food("Banana", 5.0),
+        Food("Biscoito", 2.50),
+        Food("Arroz", 10.0)
+    )
+
+    private val foodAdapter by lazy { FoodAdapter(this, foodList) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onStart() {
         super.onStart()
 
-        button_open.setOnClickListener {
+        setupFoodList()
 
-            //chamar explicita passando a classe
-            /*val intent = Intent(this, Activity2::class.java)
-            startActivity(intent)*/
-
-            //chamar com intent implicita
-            val secAtivityIntent = Intent()
-            secAtivityIntent.action = SECOND_ACTIVITY
-            secAtivityIntent.addCategory(TEXT_COMMONS)
-            if(secAtivityIntent.resolveActivity(packageManager) != null) startActivity(secAtivityIntent)
-
-        }
-
-        button_add_event.setOnClickListener {
-            val cal: Calendar = Calendar.Builder().setCalendarType("iso8601")
-                .setDate(2020,9,7).build()
-            addEvent("Aniversario da Bia", "fique aí na sua casa mesmo", cal.timeInMillis , cal.timeInMillis)
+        add_food_button.setOnClickListener {
+            val intentFoodItem = Intent(this, FoodItemActivity::class.java)
+            startActivityForResult(intentFoodItem, INTENT_FOOD_ID)
         }
     }
 
-
-    private fun addEvent(title: String, location: String, begin: Long, end: Long) {
-        val intent = Intent(Intent.ACTION_INSERT).apply {
-            data = CalendarContract.Events.CONTENT_URI
-            putExtra(CalendarContract.Events.TITLE, title)
-            putExtra(CalendarContract.Events.EVENT_LOCATION, location)
-            putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, begin)
-            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, end)
+    private fun setupFoodList() {
+        listview_food.setOnItemClickListener { _, _, position, id ->
+            val (name, price) = foodList[position]
+            Toast.makeText(this, "click: $name $price", Toast.LENGTH_SHORT).show()
         }
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivity(intent)
+        listview_food.adapter = foodAdapter
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == INTENT_FOOD_ID && resultCode == Activity.RESULT_OK){
+            if(data != null){
+                insertFood(data.getStringExtra("name"), data.getDoubleExtra("price",0.0))
+            }
         }
     }
+
+    private fun insertFood(name: String, price: Double) {
+        foodList.add(Food(name, price))
+        foodAdapter.notifyDataSetChanged()
+    }
+
+    override fun onPause() {super.onPause()}
+
+    override fun onResume() {super.onResume()}
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelableArrayList(SAVED_FOOD_LIST, foodList)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        foodList.clear()
+        savedInstanceState.getParcelableArrayList<Food>(SAVED_FOOD_LIST)?.let { foodList.addAll(it) }
+    }
+
 
 }
